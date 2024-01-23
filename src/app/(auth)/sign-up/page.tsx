@@ -12,6 +12,9 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import type { TauthCredentials } from "@/lib/validators/accountCredentials";
 import { authCredentials } from "@/lib/validators/accountCredentials";
 import { trpc } from "@/trpc/client";
+import { toast } from "sonner";
+import { ZodError } from "zod";
+import { useRouter } from "next/navigation";
 
 function SignUpPage() {
   const {
@@ -22,7 +25,26 @@ function SignUpPage() {
     resolver: zodResolver(authCredentials),
   });
 
-  const { mutate, isLoading } = trpc.auth.createPayloadUser.useMutation({});
+  const router = useRouter();
+
+  const { mutate, isLoading } = trpc.auth.createPayloadUser.useMutation({
+    onError: (error) => {
+      if (error.data?.code === "CONFLICT") {
+        toast.error("This email is already in use");
+        return;
+      }
+      if (error instanceof ZodError) {
+        toast.error(error.issues[0].message);
+        return;
+      }
+      toast.error("Something went wrong. Please try again.");
+    },
+
+    onSuccess: ({ sentToEmail }) => {
+      toast.success(`Verification email sent to ${sentToEmail}`);
+      router.push(`/verify-email?to=${sentToEmail}`);
+    },
+  });
 
   function onSubmit({ email, password }: TauthCredentials) {
     mutate({ email, password });
@@ -54,6 +76,11 @@ function SignUpPage() {
                     })}
                     placeholder="you@example.com"
                   />
+                  {errors?.email && (
+                    <p className="text-sm text-red-500">
+                      {errors.email.message}
+                    </p>
+                  )}
                 </div>
                 <div className="grid gap-1 py-2">
                   <Label htmlFor="password">Password</Label>
@@ -65,6 +92,11 @@ function SignUpPage() {
                     })}
                     placeholder="password"
                   />
+                  {errors?.password && (
+                    <p className="text-sm text-red-500">
+                      {errors.password.message}
+                    </p>
+                  )}
                 </div>
                 <Button>Sign up</Button>
               </div>
