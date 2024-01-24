@@ -4,9 +4,14 @@ import Icons from "./Icons";
 import NavItems from "./NavItems";
 import { buttonVariants } from "./ui/button";
 import Cart from "./Cart";
+import { getServerSideUser } from "@/lib/payloadUtils";
+import { cookies } from "next/headers";
+import UserAccountNav from "./UserAccountNav";
 
-function NavBar() {
-  const user = null;
+async function NavBar() {
+  const nextCookies = cookies();
+  const { user } = await getServerSideUser(nextCookies);
+
   return (
     <div className="bg-white stick z-50 top-0 inset-x-0 h-16">
       <header className="relative bg-white">
@@ -24,19 +29,19 @@ function NavBar() {
               </div>
               <div className="ml-auto flex items-center">
                 <div className="hidden lg:flex lg:flex-1 lg:items-center lg:justify-end lg:space-x-6">
-                  {!user && (
+                  {!user ? (
                     <Link
                       href="/sign-in"
                       className={buttonVariants({ variant: "ghost" })}
                     >
                       Sign in
                     </Link>
-                  )}
+                  ) : null}
                   {!user && (
                     <span className="h-6 w-px bg-gray-200" aria-hidden="true" />
                   )}
                   {user ? (
-                    <p></p>
+                    <UserAccountNav user={user} />
                   ) : (
                     <Link
                       href="/sign-up"
@@ -45,17 +50,17 @@ function NavBar() {
                       Sign up
                     </Link>
                   )}
-                  {user && (
+                  {user ? (
                     <span className="h-6 w-px bg-gray-200" aria-hidden="true" />
-                  )}
-                  {!user && (
+                  ) : null}
+                  {!user ? (
                     <div className="flex lg:ml-6">
                       <span
                         className="h-6 w-px bg-gray-200"
                         aria-hidden="true"
                       />
                     </div>
-                  )}
+                  ) : null}
                   <div className="ml-4  flow-root lg:ml-6">
                     <Cart />
                   </div>
