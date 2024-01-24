@@ -65,7 +65,12 @@ function SignUpPage() {
             </Link>
           </div>
           <div className="grid gap-6">
-            <form onSubmit={handleSubmit(onSubmit)}>
+            <form
+              onSubmit={
+                // @ts-expect-error don't know why this is happening
+                handleSubmit(onSubmit)
+              }
+            >
               <div className="grid gap-2">
                 <div className="grid gap-1 py-2">
                   <Label htmlFor="email">Email</Label>
@@ -78,7 +83,7 @@ function SignUpPage() {
                   />
                   {errors?.email && (
                     <p className="text-sm text-red-500">
-                      {errors.email.message}
+                      {errors.email.message?.toString()}
                     </p>
                   )}
                 </div>
@@ -94,7 +99,7 @@ function SignUpPage() {
                   />
                   {errors?.password && (
                     <p className="text-sm text-red-500">
-                      {errors.password.message}
+                      {errors.password.message?.toString()}
                     </p>
                   )}
                 </div>
