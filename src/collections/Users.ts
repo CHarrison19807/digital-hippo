@@ -9,6 +9,10 @@ export const Users: CollectionConfig = {
       },
     },
   },
+  admin: {
+    hidden: ({ user }) => user.role !== "admin",
+    defaultColumns: ["id"],
+  },
   access: {
     read: () => true,
     create: () => true,
@@ -16,22 +20,34 @@ export const Users: CollectionConfig = {
 
   fields: [
     {
+      name: "products",
+      label: "Products",
+      admin: {
+        condition: () => false,
+      },
+      type: "relationship",
+      relationTo: "products",
+      hasMany: true,
+    },
+    {
+      name: "product_files",
+      label: "Product files",
+      admin: {
+        condition: () => false,
+      },
+      type: "relationship",
+      relationTo: "product_files",
+      hasMany: true,
+    },
+    {
       name: "role",
       defaultValue: "user",
       required: true,
-      //   admin: {
-      //     condition: () => false,
-      //   },
+
       type: "select",
       options: [
-        {
-          label: "Admin",
-          value: "admin",
-        },
-        {
-          label: "User",
-          value: "user",
-        },
+        { label: "Admin", value: "admin" },
+        { label: "User", value: "user" },
       ],
     },
   ],
