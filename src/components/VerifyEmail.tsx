@@ -47,7 +47,7 @@ function VerifyEmail({ token }: VerifyEmailProps) {
     );
   }
 
-  if (isLoading || true) {
+  if (isLoading) {
     return (
       <div className="flex flex-col items-center gap-2">
         <Loader2 className="animate-spin h-8 w-8 text-zinc-300" />
