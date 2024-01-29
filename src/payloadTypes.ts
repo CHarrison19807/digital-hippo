@@ -40,6 +40,7 @@ export interface Product {
   id: number;
   user?: (number | null) | User;
   name: string;
+  slug: string;
   description?: string | null;
   price: number;
   category: 'ui-kits' | 'icons';
