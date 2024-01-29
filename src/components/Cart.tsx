@@ -1,4 +1,5 @@
-import { ShoppingCart } from "lucide-react";
+"use client";
+import { Loader2, ShoppingCart } from "lucide-react";
 import {
   Sheet,
   SheetContent,
@@ -12,9 +13,26 @@ import { formatPrice } from "@/lib/utils";
 import Link from "next/link";
 import { buttonVariants } from "./ui/button";
 import Image from "next/image";
-const itemCount = 10;
-const transactionFee = 1;
+import { useCart } from "@/hooks/useCart";
+import { ScrollArea } from "@radix-ui/react-scroll-area";
+import CartItem from "./CartItem";
+import { useEffect, useState } from "react";
 function Cart() {
+  const { items } = useCart();
+  const itemCount = items.length;
+
+  const [isMounted, setIsMounted] = useState<boolean>(false);
+
+  const cartTotal = items.reduce(
+    (total, { product }) => total + product.price,
+    0
+  );
+
+  const transactionFee = cartTotal * 0.05;
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
   return (
     <Sheet>
       <SheetTrigger className="group -m-2 flex items-center p-2">
@@ -23,7 +41,11 @@ function Cart() {
           className="h-6 w-6 flex-shrink-0 text-gray-400 group-hover:text-gray-500"
         />
         <span className="ml-2 text-sm font-medium text-gray-700 group-hover:text-gray-800">
-          {itemCount}
+          {isMounted ? (
+            itemCount
+          ) : (
+            <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+          )}
         </span>
       </SheetTrigger>
       <SheetContent className="flex w-full flex-col pr-0 sm:max-w-lg">
@@ -32,7 +54,13 @@ function Cart() {
         </SheetHeader>
         {itemCount > 0 ? (
           <>
-            <div className="flex w-full flex-col pr-6">cart items</div>
+            <div className="flex w-full flex-col pr-6">
+              <ScrollArea>
+                {items.map(({ product }) => (
+                  <CartItem product={product} key={product.id} />
+                ))}
+              </ScrollArea>
+            </div>
             <div className="space-y-4 pr-6">
               <Separator />
               <div className="space-y-1.5 text-sm">
@@ -46,7 +74,7 @@ function Cart() {
                 </div>
                 <div className="flex">
                   <span className="flex-1">Total</span>
-                  <span>{formatPrice(100)}</span>
+                  <span>{formatPrice(cartTotal + transactionFee)}</span>
                 </div>
               </div>
               <SheetFooter>
