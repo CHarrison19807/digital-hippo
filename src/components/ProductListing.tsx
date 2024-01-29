@@ -5,6 +5,7 @@ import Link from "next/link";
 import { cn, formatPrice } from "@/lib/utils";
 import { PRODUCT_CATEGORIES } from "@/config";
 import ImageSlider from "./ImageSlider";
+import slugify from "slugify";
 
 interface ProductListingProps {
   product: Product | null;
@@ -27,6 +28,8 @@ function ProductListing({ product, index }: ProductListingProps) {
     return <ProductPlaceholder />;
   }
 
+  const slug = slugify(product.name, { lower: true });
+
   const label = PRODUCT_CATEGORIES.find(
     ({ value }) => value === product.category
   )?.label;
@@ -41,7 +44,7 @@ function ProductListing({ product, index }: ProductListingProps) {
         className={cn("invisible h-full w-full cursor-pointer group/main", {
           "visible animate-in fade-in-5": isVisible,
         })}
-        href={`/products/${product.id}`}
+        href={`/product/${slug}`}
       >
         <div className="flex flex-col w-full">
           <ImageSlider urls={validUrls} />
