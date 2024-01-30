@@ -59,9 +59,8 @@ function EmailTemplate({ actionLabel, buttonText, href }: EmailTemplateProps) {
   );
 }
 
-function PrimaryActionEmailHtml(props: EmailTemplateProps) {
+export const PrimaryActionEmailHtml = (props: EmailTemplateProps) =>
   render(<EmailTemplate {...props} />, { pretty: true });
-}
 
 const main = {
   backgroundColor: "#ffffff",
@@ -107,5 +106,3 @@ const footer = {
   color: "#8898aa",
   fontSize: "12px",
 };
-
-export { PrimaryActionEmailHtml };
