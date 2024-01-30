@@ -71,6 +71,7 @@ var body_parser_1 = __importDefault(require("body-parser"));
 var webhooks_1 = require("./webhooks");
 var build_1 = __importDefault(require("next/dist/build"));
 var path_1 = __importDefault(require("path"));
+var url_1 = require("url");
 var app = (0, express_1.default)();
 var PORT = Number(process.env.PORT) || 3000;
 var createContext = function (_a) {
@@ -82,7 +83,7 @@ var createContext = function (_a) {
 };
 function start() {
     return __awaiter(this, void 0, void 0, function () {
-        var webhookMiddleware, payload;
+        var webhookMiddleware, payload, cartRouter;
         var _this = this;
         return __generator(this, function (_a) {
             switch (_a.label) {
@@ -106,6 +107,17 @@ function start() {
                         })];
                 case 1:
                     payload = _a.sent();
+                    cartRouter = express_1.default.Router();
+                    cartRouter.use(payload.authenticate);
+                    cartRouter.get("/", function (req, res) {
+                        var request = req;
+                        if (!request.user) {
+                            return res.redirect("/sign-in?origin=cart");
+                        }
+                        var parsedUrl = (0, url_1.parse)(req.url, true);
+                        return nextUtils_1.nextApp.render(req, res, "/cart", parsedUrl.query);
+                    });
+                    app.use("/cart", cartRouter);
                     if (process.env.NEXT_BUILD) {
                         app.listen(PORT, function () { return __awaiter(_this, void 0, void 0, function () {
                             return __generator(this, function (_a) {
